@@ -2,6 +2,30 @@
 
 This PowerShell module provides functions to interact with the [Dexie API](https://dexie.space/api), allowing you to build URLs, retrieve Chia Asset Tokens (CATs), send offers, search for offers, and more.
 
+To get the most out of the functions, assign them to a variable at runtime like this:
+
+```powershell
+$offer = Get-DexieOffer -dexie_id 9dJtYToVpcG7UvapnWQH51A4iBWTMRfBXVwrXgfnvEej -result_only
+
+$offer.id
+9dJtYToVpcG7UvapnWQH51A4iBWTMRfBXVwrXgfnvEej
+
+$offer.offered
+id  code name amount
+--  ---- ---- ------
+xch XCH  Chia     20
+
+$offer.requested
+id                                                               code    name                 amount
+--                                                               ----    ----                 ------
+fa4a180ac326e67ea289b869e3448256f6af05721f7cf934cb9901baa6b7a99d wUSDC.b Base warp.green USDC 318.62
+
+$offer.price
+15.931
+
+
+```
+
 ## Functions
 
 ### `Get-DexieAssets`
