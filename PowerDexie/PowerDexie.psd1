@@ -9,13 +9,13 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-# RootModule = ''
+RootModule = 'PowerDexie.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.9.0'
+ModuleVersion = '0.9.2'
 
 # Supported PSEditions
-# CompatiblePSEditions = @()
+CompatiblePSEditions = @('Core', 'Desktop')
 
 # ID used to uniquely identify this module
 GUID = '2a2ce6d3-e5d3-4c7e-86c6-e863ac5c57d6'
@@ -69,23 +69,23 @@ PowerShellVersion = '7.4'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @()
-
-# Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = @(
-    "Get-DexieAssets", 
+FunctionsToExport = @(
     "Get-DexieAssets",
-    "Send-DexieOffer",
-    "Show-DexieOffers",
+    "Get-DexieOffers", 
     "Show-DexieOffer",
-    "Get-DexieOffers",
+    "Show-DexieOffers",
     "Get-DexiePairs",
     "Get-DexieTickers",
     "Get-DexieOrderBook",
     "Get-DexieHistoricalTrades",
+    "Show-DexieLiquidityRewards",
     "Get-DexieQuote",
-    "Get-DexieLiquidityRewards",
-    "Complete-DexieSwap")
+    "Complete-DexieSwap",
+    "Send-DexieOffer"
+)
+
+# Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
+CmdletsToExport = @()
 
 # Variables to export from this module
 VariablesToExport = '*'
