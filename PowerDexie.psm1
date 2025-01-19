@@ -1,4 +1,4 @@
-Function Build-UrlWithParameters {
+function Build-UrlWithParameters {
     <#
         .SYNOPSIS
             Build a url from a hashtable of parameters.
@@ -53,7 +53,7 @@ Function Build-UrlWithParameters {
     return $FullUrl
 }
 
-Function Get-DexieAssets {
+function Get-DexieAssets {
     <#
         .SYNOPSIS
             Retrieve a list of Chia Asset Tokens (CATs) from the dexie asset endpoint.
@@ -166,7 +166,9 @@ Function Get-DexieAssets {
     }
 }
 
-Function Send-DexieOffer {
+
+
+function Send-DexieOffer {
     <#
     .SYNOPSIS
         Send an offer to the dexie.space API Endpoint.
@@ -241,7 +243,7 @@ Function Send-DexieOffer {
     Invoke-WebRequest -Method POST -body $json_offer -Uri $uri -ContentType $contentType
 }
     
-Function Get-DexieOffers {
+function Get-DexieOffers {
     <#
     .SYNOPSIS
         Search for offers posted to dexie.space.
@@ -420,7 +422,7 @@ Function Get-DexieOffers {
     }
 }
 
-Function Get-DexieOffer {
+function Show-DexieOffer {
     <#
     .SYNOPSIS
         Get the offer details for a specific offer on dexie.space.
@@ -429,12 +431,12 @@ Function Get-DexieOffer {
     .PARAMETER dexie_id
         The dexie_id is a Base58 encoded hash of the offer file or the hash of the spend bundle (a.k.a. trade_id)
     .EXAMPLE
-        Get-DexieOffer -dexie_id HR7aHbCXsJto7iS9uBkiiGJx6iGySxoNqUGQvrZfnj6B
+        Show-DexieOffer -id HR7aHbCXsJto7iS9uBkiiGJx6iGySxoNqUGQvrZfnj6B
 
         success : True
         offer   : @{id=HR7aHbCXsJto7iS9uBkiiGJx6iGySxoNqUGQvrZfnj6B; status=0; ...}
     .EXAMPLE 
-        Get-DexieOffer -dexie_id HR7aHbCXsJto7iS9uBkiiGJx6iGySxoNqUGQvrZfnj6B -result_only
+        Show-DexieOffer -id HR7aHbCXsJto7iS9uBkiiGJx6iGySxoNqUGQvrZfnj6B -result_only
         
         id                : HR7aHbCXsJto7iS9uBkiiGJx6iGySxoNqUGQvrZfnj6B
         status            : 4
@@ -459,12 +461,12 @@ Function Get-DexieOffer {
     #>
     param(
         [Parameter(Position=0,mandatory=$true)]
-        $dexie_id,
+        [string]$id,
         [switch]
         $result_only
     )
 
-    $uri = -join("https://api.dexie.space/v1/offers/",$dexie_id)
+    $uri = -join("https://api.dexie.space/v1/offers/",$id)
     $result = Invoke-RestMethod -Uri $uri -Method Get -MaximumRetryCount 5 -RetryIntervalSec 1
 
     if($result_only.IsPresent){
@@ -475,7 +477,70 @@ Function Get-DexieOffer {
 
 }
 
-Function Get-DexiePairs {
+function Show-DexieOffers {
+    <#
+    .SYNOPSIS
+        Get the offer details for a list of offers on dexie.space.
+    .DESCRIPTION
+        Look up a list of offers on dexie.space.
+    .PARAMETER ids
+        The dexie_id is a Base58 encoded hash of the offer file.
+    .EXAMPLE
+
+        Show-DexieOffers -ids @("HR7aHbCXsJto7iS9uBkiiGJx6iGySxoNqUGQvrZfnj6B","HR7aHbCXsJto7iS9uBkiiGJx6iGySxoNqUGQvrZfnj6B")
+
+        success : True
+        offers  : {@{id=HR7aHbCXsJto7iS9uBkiiGJx6iGySxoNqUGQvrZfnj6B; status=0; ...}
+    .EXAMPLE
+
+        Show-DexieOffers -ids @("HR7aHbCXsJto7iS9uBkiiGJx6iGySxoNqUGQvrZfnj6B","AcFmcxPMregpo88srcdQW4FCKDgbVnEEKNA4wS3ydHLh") -result_only
+
+id                : AcFmcxPMregpo88srcdQW4FCKDgbVnEEKNA4wS3ydHLh
+status            : 0
+date_found        : 1/19/2025 3:14:07 PM
+date_completed    : 
+maker_puzzle_hash : 0x23d871b75f16693241ca01d421a1a04e77bb42cce1e2cca6a27bc17bd3bf4bba
+claimable_rewards : 2.982
+trade_id          : 0xaaeedea1b61be691eed187631ce12b82990ddf767dd8989edf92466521244850
+mod_version       : 2
+rewards           : {@{amount=2.982; code=DBX; id=db1a9020d48d9d4ad22631b66ab4b9ebd3637ef7758ad38881348c5d24c38f20; name=dexie bucks}} 
+
+id                : HR7aHbCXsJto7iS9uBkiiGJx6iGySxoNqUGQvrZfnj6B
+status            : 4
+date_found        : 8/6/2022 8:28:49 AM
+date_completed    : 8/7/2022 1:55:19 PM
+maker_puzzle_hash : 0x0150a84dd60158297ef5b8096390fc20de1239239a29acd362675abc239b92b8
+claimable_rewards : 0
+trade_id          : 0x9228a97feb1047f708a7f563565b1611b7b742e30f2b4a968035019e90ff2959
+mod_version       : 1
+rewards           : 
+
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(mandatory=$true)]
+        [string[]]$ids,
+        [switch]
+        $result_only
+    )
+    $json = @{
+        ids = $ids
+    } | ConvertTo-Json
+
+    $uri = 'https://api.dexie.space/v1/offersBatch'
+    $contentType = 'application/json'
+
+    $result = Invoke-RestMethod -Method Post -Uri $uri -Body $json -ContentType $contentType
+
+    if($result_only.IsPresent){
+        return $result.offers
+    } else {
+        return $result
+    }
+
+}
+
+function Get-DexiePairs {
     <#
         .SYNOPSIS
             Get a list of all XCH-CAT pairs.
@@ -527,7 +592,7 @@ Function Get-DexiePairs {
     }
 }
 
-Function Get-DexieTickers {
+function Get-DexieTickers {
     <#
         .SYNOPSIS
             Gather basic trading information on specific ticker_ids.
@@ -597,7 +662,7 @@ Function Get-DexieTickers {
     }
 }
 
-Function Get-DexieOrderBook {
+function Get-DexieOrderBook {
     <#
         .SYNOPSIS
             Get the current orderbook for trading pair on dexie.space.
@@ -665,7 +730,7 @@ Function Get-DexieOrderBook {
 
 }
 
-Function Get-DexieHistoricalTrades {
+function Get-DexieHistoricalTrades {
     <#
     .SYNOPSIS
         Get Historical trades on dexie.space for a given ticker_id.
@@ -755,3 +820,99 @@ Function Get-DexieHistoricalTrades {
     }
 
 }
+
+function Show-DexieLiquidityRewards {
+    <#
+    .SYNOPSIS
+        Show the current liquidity rewards on dexie.space.
+    .DESCRIPTION
+        Show the current liquidity rewards on dexie.space.  This will show the rewards for providing liquidity to the dexie.space exchange.
+    .EXAMPLE
+
+        Show-DexieLiquidityRewards -ids @("CxHxbuBUz89Wj8ALmPX4FtUyPFPM1KxXdPqCXReMVd7x",....)
+
+    success offers
+    ------- ------
+    True {@{id=CxHxbuBUz89Wj8ALmPX4FtUyPFPM1KxXdPqCXReMVd7x; status=0; date_found=1/19/2025 3:14:06 PM; date_completed=; maker_puzzle_hash=0x4f038009275e93d9df1ae2e07695a466313915e9412961234c0465d4adfd4d6a; claimable_rewards=0.163… 
+
+    #>
+    param(
+        [Parameter(mandatory=$true)]
+        [string[]]$ids,
+        [switch]$results_only
+    )
+    $json = @{
+        ids = $ids
+    } | ConvertTo-Json
+
+    $uri = 'https://api.dexie.space/v1/rewards/check'
+    $contentType = 'application/json'
+
+    $result = Invoke-RestMethod -Method Post -Uri $uri -Body $json -ContentType $contentType
+
+    if($results_only.IsPresent){
+        return $result.offers
+    } else {
+        return $result
+    }
+    
+
+}
+
+function Get-DexieQuote {
+    param(
+        [Parameter(mandatory=$true)]
+        [string]$from,
+        [Parameter(mandatory=$true)]
+        [string]$to,
+        [UInt64]$from_amount,
+        [UInt64]$to_amount,
+        [switch]$results_only
+    )
+
+    if (-not $from_amount -and -not $to_amount) {
+        throw "Either from_amount or to_amount is required."
+    }
+
+    $parameters = @{
+        from = $from
+        to = $to
+    }
+
+    if ($from_amount) {
+        $parameters.Add('from_amount', $from_amount)
+    }
+
+    if ($to_amount) {
+        $parameters.Add('to_amount', $to_amount)
+    }
+
+    $uri = Build-UrlWithParameters -BaseUrl 'https://api.dexie.space/v1/swap/quote' -Parameters $parameters
+    $results = Invoke-RestMethod -Method Get -Uri $uri
+
+    if($results_only.IsPresent){
+        return $results.quote
+    } else {
+        return $results
+    }
+}
+
+function Complete-DexieSwap {
+    param(
+        [Parameter(mandatory=$true)]
+        [string]$offer
+    )
+
+    $json = @{
+        offer = $offer
+        fee_destination = "xch1gjh6ehqk9m0mvyx4knt3j0zx09nllmech2jeq7cv2lsqgzdh2mnqc5zk2t"
+    } | ConvertTo-Json
+
+    $uri = "https://api.dexie.space/v1/swap"
+    $contentType = 'application/json'
+
+    $result = Invoke-RestMethod -Method Post -Uri $uri -Body $json -ContentType $contentType
+    return $result
+
+}
+
