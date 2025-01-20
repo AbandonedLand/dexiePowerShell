@@ -91,6 +91,10 @@ function Get-DexieAssets {
         .LINK
             https://dexie.space/assets
         
+        .LINK
+            More infromation on dexie.space api can be found: https://dexie.space/api
+
+        
         .EXAMPLE
             Get-DexieAssets
 
@@ -205,6 +209,10 @@ function Send-DexieOffer {
                     fees              : 0
             }
         }
+
+    .LINK
+        More infromation on dexie.space api can be found: https://dexie.space/api
+
     .EXAMPLE
     Send-DexieOffer -offer "offer1qqz83wc..."
 
@@ -332,6 +340,7 @@ function Get-DexieOffers {
 
     ...
 
+    
     .EXAMPLE 
     Get-DexieOffers -status Completed -offered col1aufdw4wm8mph9rdtqljg3nm22k8c6wapuqgfr0mp0anpfhkhn7as6nkpp2 -requested XCH -page_size 2 -page 1 -compact
 
@@ -345,6 +354,9 @@ function Get-DexieOffers {
                 date_completed=8/5/2024 2:24:35 PM; date_pending=8/5/2024 2:23:38 PM; date_expiry=; block_expiry=; spent_block_index=5743846; price=0.2; offered=System.Object[]; requested=System.Object[]; fees=0; mempool=;
                 related_offers=System.Object[]; mod_version=2; trade_id=0x720c2a1249f68126ec0e5c82f084d7a3441ed7cc742f29fa5187983ee4713f69; known_taker=}}
 
+
+    .LINK
+        More infromation on dexie.space api can be found: https://dexie.space/api
 
     #>
 
@@ -458,6 +470,10 @@ function Show-DexieOffer {
         known_taker       : 
         input_coins       : @{xch=System.Object[]; 0xa628c1c2c6fcb74d53746157e438e108eab5c0bb3e5c80ff9b1910b3e4832913=System.Object[]}
         output_coins      : @{xch=System.Object[]; 0xa628c1c2c6fcb74d53746157e438e108eab5c0bb3e5c80ff9b1910b3e4832913=System.Object[]}
+
+        .LINK
+        More infromation on dexie.space api can be found: https://dexie.space/api
+
     #>
     param(
         [Parameter(Position=0,mandatory=$true)]
@@ -514,6 +530,9 @@ claimable_rewards : 0
 trade_id          : 0x9228a97feb1047f708a7f563565b1611b7b742e30f2b4a968035019e90ff2959
 mod_version       : 1
 rewards           : 
+
+.LINK
+        More infromation on dexie.space api can be found: https://dexie.space/api
 
     #>
     [CmdletBinding()]
@@ -578,6 +597,9 @@ function Get-DexiePairs {
             ..........
         .LINK
             https://dexie.space/api/prices
+        .LINK
+            More infromation on dexie.space api can be found: https://dexie.space/api
+
     #>
     param(
         [switch]
@@ -860,6 +882,55 @@ function Show-DexieLiquidityRewards {
 }
 
 function Get-DexieQuote {
+    <#
+    .SYNOPSIS
+        Get a quote for a swap on dexie.space.
+
+    .DESCRIPTION
+        Get a quote for a swap on dexie.space.  This will return the quote for the swap.
+
+    .PARAMETER from
+        The asset_id or code of the asset to swap from.
+
+    .PARAMETER to
+        The asset_id or code of the asset to swap to.
+
+    .PARAMETER from_amount
+        The amount in Mojo to swap from.  1 XCH = 1000000000 Mojo.  1 CAT = 1000 Mojo.
+
+    .PARAMETER to_amount
+        The amount in Mojo to swap to.  1 XCH = 1000000000 Mojo.  1 CAT = 1000 Mojo.
+
+    .PARAMETER results_only
+        Return only the results without the metadata.
+    
+    .EXAMPLE
+        Get-DexieQuote -from XCH -to CAT -from_amount 1000000000 -results_only
+
+        from             : xch
+        from_amount      : 1000000000000
+        to               : db1a9020d48d9d4ad22631b66ab4b9ebd3637ef7758ad38881348c5d24c38f20
+        to_amount        : 197126
+        combination_fee  : 100
+        suggested_tx_fee : 51791324
+    
+    .EXAMPLE
+        Get-DexieQuote -from XCH -to e0005928763a7253a9c443d76837bdfab312382fc47cab85dad00be23ae4e82f -from_amount 1000000000
+    
+        success quote
+        ------- -----
+        True @{from=xch; from_amount=1000000000; to=e0005928763a7253a9c443d76837bdfab312382fc47cab85dad00be23ae4e82f; to_amount=1046108; c…
+
+    .NOTES
+        Dexie Swaps have a 1% fee. using this method.
+
+    .LINK
+        More infromation on dexie.space api can be found: https://dexie.space/api
+
+    
+    
+    
+    #>
     param(
         [Parameter(mandatory=$true)]
         [string]$from,
