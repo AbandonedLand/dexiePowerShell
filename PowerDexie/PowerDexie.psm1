@@ -172,7 +172,7 @@ function Get-DexieAssets {
 
 
 
-function Send-DexieOffer {
+function Submit-DexieOffer {
     <#
     .SYNOPSIS
         Send an offer to the dexie.space API Endpoint.
@@ -968,7 +968,7 @@ function Get-DexieQuote {
     }
 }
 
-function Complete-DexieSwap {
+function Submit-DexieSwap {
     <#
     .SYNOPSIS
         Complete a swap on dexie.space.
@@ -1008,4 +1008,4 @@ function Complete-DexieSwap {
 
 }
 
-Export-ModuleMember -Function Get-DexieAssets, Get-DexieOffers, Show-DexieOffer, Show-DexieOffers, Get-DexiePairs, Get-DexieTickers, Get-DexieOrderBook, Get-DexieHistoricalTrades, Show-DexieLiquidityRewards, Get-DexieQuote, Complete-DexieSwap, Send-DexieOffer
+Export-ModuleMember -Function Get-DexieAssets, Get-DexieOffers, Show-DexieOffer, Show-DexieOffers, Get-DexiePairs, Get-DexieTickers, Get-DexieOrderBook, Get-DexieHistoricalTrades, Show-DexieLiquidityRewards, Get-DexieQuote, Submit-DexieSwap, Submit-DexieOffer
