@@ -83,7 +83,7 @@ Output:
 
 ```
 
-### `Send-DexieOffer`
+### `Submit-DexieOffer`
  Send an offer to the dexie.space API Endpoint.
 #### Description
 Sends your offer to dexie.space for listing on their exchange.  The offer file is created using the 
@@ -99,7 +99,7 @@ Sends your offer to dexie.space for listing on their exchange.  The offer file i
 
 #### Examples
 ```powershell
-Send-DexieOffer -offer "offer1qqz83wc..."
+Submit-DexieOffer -offer "offer1qqz83wc..."
 
 Output:
 

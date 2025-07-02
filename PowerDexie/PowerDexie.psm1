@@ -139,7 +139,9 @@ function Get-DexieAssets {
         [int] $page_size,
         [int] $page,
         [switch]
-        $results_only
+        $results_only,
+        [switch] $cats,
+        [switch] $nfts
     )
     # BaseUrl
     $uri = "https://dexie.space/v1/assets"
@@ -154,6 +156,14 @@ function Get-DexieAssets {
     if($page){
         # Add paramater to hashtable
         $parameters.Add('page',$page)
+    }
+    if($cats.IsPresent){
+        # Add paramater to hashtable
+        $parameters.Add('type','cat')
+    }
+    if($nfts.IsPresent){
+        # Add paramater to hashtable
+        $parameters.Add('type','nft')
     }
     # Build URI
     $uri = Build-UrlWithParameters -BaseUrl $uri -Parameters $parameters
@@ -248,7 +258,7 @@ function Submit-DexieOffer {
 
     $json_offer = $json | ConvertTo-Json
 
-    Invoke-WebRequest -Method POST -body $json_offer -Uri $uri -ContentType $contentType
+    Invoke-RestMethod -Method POST -body $json_offer -Uri $uri -ContentType $contentType
 }
     
 function Get-DexieOffers {
