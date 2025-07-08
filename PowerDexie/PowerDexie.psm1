@@ -1018,4 +1018,107 @@ function Submit-DexieSwap {
 
 }
 
-Export-ModuleMember -Function Get-DexieAssets, Get-DexieOffers, Show-DexieOffer, Show-DexieOffers, Get-DexiePairs, Get-DexieTickers, Get-DexieOrderBook, Get-DexieHistoricalTrades, Show-DexieLiquidityRewards, Get-DexieQuote, Submit-DexieSwap, Submit-DexieOffer
+
+class DexieOfferResponse {
+    [string]$name
+    [string]$id
+    [string]$code
+    [PSCustomObject]$collection
+    [PSCustomObject]$preview
+    [PSCustomObject]$nft_data
+    [decimal]$amount
+    [bool]$is_nft
+
+    DexieOfferResponse($props){
+        $this.Initialize($props)
+    }
+
+    Initialize($props){
+        $this.name = $props.name
+        $this.id = $props.id
+        $this.code = $props.code
+        $this.collection = $props.collection
+        $this.preview = $props.preview
+        $this.nft_data = $props.nft_data
+        $this.is_nft = $props.is_nft
+        $this.amount = $props.amount
+    }
+
+    [string] header(){
+        if($this.is_nft){
+            return "$($this.collection.name)"
+        } else {
+            return "$($this.code)"
+        }
+    }
+
+    [string] display(){
+        if($this.is_nft){
+            return "$($this.name)"
+        } else {
+            return "$($this.amount)"
+        }
+    }
+}
+
+function Select-DexieOffers {
+    <#
+    .SYNOPSIS
+        Allows you to select multiple offers from dexie.space based on criteria.
+    .DESCRIPTION
+        Uses Out-ConsoleGridView to allow you to select multiple offers.
+    .NOTES
+        This function allows you to filter and select offers from the dexie.space API.
+    .PARAMETER offered
+        The token you want to offer.
+
+    .PARAMETER requested
+        The token you want to receive.
+    .EXAMPLE
+        Select-DexieOffers -offered xch -requested wUSDC.b
+
+    .EXAMPLE
+        Select-DexieOffers -offered wUSDC.b -requested col19wpxue09n5d4h7r85zzr38yz3zz2jtrveqreghr06z8lfwhj44ws0at3xp
+
+        This will display all the offers that are offering wUSDC.b for the NFT collection ("2405 Pollen Way")
+    #>
+
+    param(
+        [Parameter(mandatory=$true)]
+        [string]$offered,
+
+        [Parameter(mandatory=$true)]
+        [string]$requested
+    )
+
+    
+    $offers = (Get-DexieOffers -offered $offered -requested $requested).offers
+
+
+    $display = $offers | ForEach-Object {
+        $loffered = [DexieOfferResponse]::new($_.offered)
+        $lrequested = [DexieOfferResponse]::new($_.requested)
+        [PSCustomObject]@{
+            $(-join ("-------",$lrequested.header(),"-Requested","-------")) = $($lrequested.display())
+            $(-join ("-------",$loffered.header(),"-Offered","-------"))  = $($loffered.display())
+            $(-join ("-------","Price","-------")) = $_.price
+            ID          = $_.id
+
+        }
+    }
+    
+    $selected = $display | Out-ConsoleGridView -Title "Select Offers" -OutputMode Multiple
+
+    $bundle = $selected | ForEach-Object {
+        $offer = Show-DexieOffer -id $_.ID 
+        if($offer.success){
+            $offer.offer
+        } else {
+            Write-Error "Failed to get offer with ID $($_.ID)"
+        }
+    }
+    return $bundle
+}
+
+
+Export-ModuleMember -Function Get-DexieAssets, Get-DexieOffers, Show-DexieOffer, Show-DexieOffers, Get-DexiePairs, Get-DexieTickers, Get-DexieOrderBook, Get-DexieHistoricalTrades, Show-DexieLiquidityRewards, Get-DexieQuote, Submit-DexieSwap, Submit-DexieOffer, Select-DexieOffers 
