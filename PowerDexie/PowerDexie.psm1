@@ -53,6 +53,18 @@ function Build-UrlWithParameters {
     return $FullUrl
 }
 
+class DexieOffer{
+
+    [PSCustomObject]$quote
+
+    DexieOffer($quote){
+        $this.quote = $quote
+    }
+    
+
+
+}
+
 function Get-DexieAssets {
     <#
         .SYNOPSIS
